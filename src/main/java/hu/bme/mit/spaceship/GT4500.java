@@ -10,9 +10,9 @@ public class GT4500 implements SpaceShip {
 
   private boolean wasPrimaryFiredLast = false;
 
-  public GT4500() {
-    this.primaryTorpedoStore = new TorpedoStore(10);
-    this.secondaryTorpedoStore = new TorpedoStore(10);
+  public GT4500(TorpedoStore prim, TorpedoStore sec) {
+    this.primaryTorpedoStore = prim;
+    this.secondaryTorpedoStore = sec;
   }
 
   public boolean fireLaser(FiringMode firingMode) {
@@ -41,54 +41,38 @@ public class GT4500 implements SpaceShip {
     switch (firingMode) {
       case SINGLE:
         if (wasPrimaryFiredLast) {
-          // try to fire the secondary first
           if (! secondaryTorpedoStore.isEmpty()) {
             firingSuccess = secondaryTorpedoStore.fire(1);
             wasPrimaryFiredLast = false;
           }
           else {
-            // although primary was fired last time, but the secondary is empty
-            // thus try to fire primary again
             if (! primaryTorpedoStore.isEmpty()) {
               firingSuccess = primaryTorpedoStore.fire(1);
               wasPrimaryFiredLast = true;
             }
-
-            // if both of the stores are empty, nothing can be done, return failure
           }
         }
         else {
-          // try to fire the primary first
           if (! primaryTorpedoStore.isEmpty()) {
             firingSuccess = primaryTorpedoStore.fire(1);
             wasPrimaryFiredLast = true;
           }
           else {
-            // although secondary was fired last time, but primary is empty
-            // thus try to fire secondary again
             if (! secondaryTorpedoStore.isEmpty()) {
               firingSuccess = secondaryTorpedoStore.fire(1);
               wasPrimaryFiredLast = false;
             }
-
-            // if both of the stores are empty, nothing can be done, return failure
           }
         }
         break;
-
       case ALL:
         if (!primaryTorpedoStore.isEmpty() && !secondaryTorpedoStore.isEmpty()) {
             primaryTorpedoStore.fire(1);
             secondaryTorpedoStore.fire(1);
             firingSuccess = true;
         }
-
-        // try to fire both of the torpedo stores
-        //TODO implement feature
-
         break;
     }
-
     return firingSuccess;
   }
 
